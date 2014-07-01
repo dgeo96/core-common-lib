@@ -837,13 +837,8 @@ void set_socket_active_status(INT32 Sd, INT32 Status)
 	DEBUG("Sd=%d, Status %s",Sd, Status == SOCKET_STATUS_ACTIVE ?  "SOCKET_STATUS_ACTIVE" : "SOCKET_STATUS_IACTIVE");
 	if(M_IS_VALID_SD(Sd) && M_IS_VALID_STATUS(Status))
 	{
-		uint32_t is = __get_PRIMASK();
-		__disable_irq();
 		socket_active_status &= ~(1 << Sd);      /* clean socket's mask */
 		socket_active_status |= (Status << Sd); /* set new socket's mask */
-		if ((is & 1) == 0) {
-			__enable_irq();
-		}
 	}
 }
 
@@ -903,12 +898,7 @@ INT32 get_socket_active_status(INT32 Sd)
 	long rv = SOCKET_STATUS_INACTIVE;
 	if(M_IS_VALID_SD(Sd))
 	{
-		uint32_t is = __get_PRIMASK();
-		__disable_irq();
 		rv = (socket_active_status & (1 << Sd)) ? SOCKET_STATUS_INACTIVE : SOCKET_STATUS_ACTIVE;
-		if ((is & 1) == 0) {
-			__enable_irq();
-		}
 	}
 	return rv;
 }
